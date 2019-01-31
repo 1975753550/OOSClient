@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="GB2312" ?>
+<project name="DemoBasedHttpconnection" default="jar" basedir=".">
+	<property file="build.properties" />
+
+	<property file="build.properties" /> <!--编译属性文件，跟具体项目相关 -->
+	<property name="jar-file-name" value="DemoBasedHttpconnection" /> <!--jar文件名 -->
+	<property name="project-name" value="DemoBasedHttpconnection" /><!--项目名称 -->
+	<property name="version" value="0.0.1" /><!--版本号 -->
+	<property name="build" value="build" /><!--编译根目录 -->
+	<property name="lib" value="lib" /><!--编译依赖库 -->
+	<property name="src" value="src" /><!--源代码 -->
+	<property name="build.classes" value="${build}/classes" /><!--编译源码目录 -->
+	<property name="jar.dir" value="jar" /><!--jar生成位置 -->
+	<property name="org.dir" value="org" /><!--spring相关XSD文件 -->
+	<!-- <property name="hbm.dir.dest" value="net/tscms/ftp/ftplet/vo"/>目标hibernate 
+		hbm文件位置 <property name="hbm.dir.src" value="src/${hbm.dir.dest}"/>源hibernate 
+		hbm文件位置 -->
+
+	<property name="jar.dir" value="jar" />
+	<!--生成jar MANIFEST.MF 中lib字段 -->
+	<pathconvert property="libs.project" pathsep=" ">
+		<mapper>
+			<chainedmapper>
+				<!-- remove absolute path -->
+				<flattenmapper />
+				<!-- add lib/ prefix -->
+				<globmapper from="*" to="lib/*" />
+			</chainedmapper>
+		</mapper>
+		<path>
+			<!-- lib.home contains all jar files, in several subdirectories -->
+			<fileset dir="${lib}">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</pathconvert>
+
+	<!--依赖jar包 -->
+	<path id="Third-Part Lib">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!--准备工作：建目录、清理 -->
+	<target name="prepare">
+		<echo message="2.开始建目录......" />
+		<mkdir dir="${build.classes}" />
+		<mkdir dir="${jar.dir}" />
+	</target>
+
+	<target name="clean">
+		<echo message="1.开始清理......" />
+		<delete dir="${build}" />
+		<delete dir="${jar.dir}" />
+	</target>
+
+	<!--编译src -->
+	<target name="compile" depends="clean,prepare">
+		<echo message="3.开始编译......" />
+		<javac srcdir="${src}" destdir="${build.classes}" failonerror="true"
+			debug="true" target="1.5">
+			<compilerarg line="-encoding UTF-8 " />
+			<classpath refid="Third-Part Lib" />
+		</javac>
+	</target>
+
+	<target name="dirPrepare">
+		<echo message="4.准备打包相关文件、目录......" />
+		<!--准备META-INF中需要的文件 -->
+		<mkdir dir="${build.classes}/META-INF" />
+		<copy todir="${build.classes}/META-INF">
+			<fileset dir="META-INF" />
+		</copy>
+
+		<!--准备spring的xsd -->
+		<mkdir dir="${build.classes}/org" />
+		<copy todir="${build.classes}/org">
+			<fileset dir="${org.dir}" />
+		</copy>
+
+		<!--准备hbm文件 <copy todir="${build.classes}/${hbm.dir.dest}"> <fileset dir="${hbm.dir.src}"/> 
+			</copy> -->
+	</target>
+
+	<!--打jar包 -->
+	<target name="jar" depends="compile,dirPrepare">
+		<echo message="5.开始打包......" />
+		<tstamp></tstamp>
+		<jar destfile="${jar.dir}/${jar-file-name}-${version}.jar"
+			basedir="${build.classes}" includes="**">
+			<manifest>
+				<!-- 此处需要根据需要进行修改 -->
+				<attribute name="Main-Class" value="com.chinatelecom.DemoApplication" />
+				<attribute name="Class-Path" value="lib/**.jar" />
+			</manifest>
+		</jar>
+	</target>
+
+</project>

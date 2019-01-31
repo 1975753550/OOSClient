@@ -2,7 +2,6 @@ package com.chinatelecom.demo;
 
 import com.chinatelecom.request.*;
 import com.chinatelecom.util.Action;
-import com.chinatelecom.util.OOSClient;
 
 public class Bucket {
     
@@ -13,7 +12,7 @@ public class Bucket {
         BucketRequest.ACL acl = BucketRequest.ACL.bucketPrivate;
         request.setACL(acl);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String deleteBucket(String bucketName) throws Exception {
@@ -21,7 +20,7 @@ public class Bucket {
         Action action = Action.DELETE;
         BucketRequest request = new BucketRequest(bucketName, action);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String deleteBucketCors(String bucketName) throws Exception {
@@ -29,7 +28,7 @@ public class Bucket {
         Action action = Action.DELETE;
         BucketCorsRequest request = new BucketCorsRequest(bucketName, action);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucketCors(String bucketName) throws Exception {
@@ -46,7 +45,7 @@ public class Bucket {
         BucketCorsRequest request = new BucketCorsRequest(bucketName, action);
         request.setConfigXML(corsConfig);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String deleteBucketLifecycle(String bucketName) throws Exception {
@@ -54,7 +53,7 @@ public class Bucket {
         Action action = Action.DELETE;
         BucketLifecycleRequest request = new BucketLifecycleRequest(bucketName, action);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucketLifecycle(String bucketName) throws Exception {
@@ -79,7 +78,7 @@ public class Bucket {
         Action action = Action.DELETE;
         BucketPolicyRequest request = new BucketPolicyRequest(bucketName, action);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucketPolicy(String bucketName) throws Exception {
@@ -96,7 +95,7 @@ public class Bucket {
         BucketPolicyRequest request = new BucketPolicyRequest(bucketName, action);
         request.setConfigXML(policyConfig);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String DeleteBucketWebsit(String bucketName) throws Exception {
@@ -104,7 +103,7 @@ public class Bucket {
         Action action = Action.DELETE;
         BucketWebsiteRequest request = new BucketWebsiteRequest(bucketName, action);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucketWebsit(String bucketName) throws Exception {
@@ -121,7 +120,7 @@ public class Bucket {
         BucketWebsiteRequest request = new BucketWebsiteRequest(bucketName, action);
         request.setConfigXML(websitConfig);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucketLogging(String bucketName) throws Exception {
@@ -138,7 +137,7 @@ public class Bucket {
         BucketLoggingRequest request = new BucketLoggingRequest(bucketName, action);
         request.setConfigXML(loggingConfig);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucketACL(String bucketName) throws Exception {
@@ -154,7 +153,7 @@ public class Bucket {
         Action action = Action.HEAD;
         BucketRequest request = new BucketRequest(bucketName, action);
         client.sendRequest(request);
-        return client.getResponseCode()+"";
+        return String.valueOf(client.getResponseCode());
     }
     
     public String getBucket(String bucketName) throws Exception {

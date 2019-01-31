@@ -12,14 +12,6 @@ public abstract class Request {
     protected String objName = "";
     protected String requestBody = "";
     
-    protected void init(Request request) {
-        setUrl(request.getUrl());
-        setRequestMethod(request.getRequestMethod());
-        setBucketName(request.getBucketName());
-        setObjName(request.getObjName());
-        setHeaders(request.getHeaders());
-        setRequestBody(request.getRequestBody());
-    }
     /**
      * @return the url
      */

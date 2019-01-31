@@ -25,6 +25,9 @@ public class DemoService {
             code = bucket.createBucket(bucketName);
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         JSONObject obj = new JSONObject();
         if(code.equalsIgnoreCase("200")) {
@@ -43,6 +46,9 @@ public class DemoService {
             code = bucket.deleteBucket(bucketName);
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         obj = new JSONObject();
         if(code.equalsIgnoreCase("204")) {
@@ -62,6 +68,9 @@ public class DemoService {
             obj = xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
@@ -75,6 +84,9 @@ public class DemoService {
             obj =xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
@@ -88,6 +100,9 @@ public class DemoService {
             obj = xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
@@ -101,6 +116,9 @@ public class DemoService {
             obj = JSONObject.parseObject(result);
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
@@ -114,6 +132,9 @@ public class DemoService {
             obj = xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
@@ -127,6 +148,9 @@ public class DemoService {
             obj = xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
@@ -139,6 +163,9 @@ public class DemoService {
             code = object.putObject(bucketName, objName, data);
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         obj = new JSONObject();
         if(code.equalsIgnoreCase("200")) {
@@ -157,6 +184,9 @@ public class DemoService {
             result = object.getObject(bucketName, objName);
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         obj.put("data", result);
         logger.info(obj.toJSONString());
@@ -169,6 +199,9 @@ public class DemoService {
             code = object.deleteObject(bucketName, objName);
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(code);
         JSONObject obj = new JSONObject();
@@ -190,6 +223,9 @@ public class DemoService {
             obj = xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
+            JSONObject error = new JSONObject();
+            error.put("errormessage", e.getMessage());
+            return error;
         }
         logger.info(obj.toJSONString());
         return obj;
