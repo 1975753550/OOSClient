@@ -35,6 +35,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.chinatelecom.request.Request;
+import com.chinatelecom.util.MyConnectionKeepAliveStrategy;
 
 @Component
 public class OOSClient {
@@ -83,6 +84,7 @@ public class OOSClient {
                 .setMaxConnPerRoute(100)
                 .setDefaultRequestConfig(requestConfig)
                 .setConnectionManager(poolingHttpClientConnectionManager)
+                .setKeepAliveStrategy(new MyConnectionKeepAliveStrategy())
                 .build();
     }
 
@@ -249,6 +251,7 @@ public class OOSClient {
     public void setRequestUrl(String requestUrl) {
         request.get().setUrl(requestUrl);
     }
+    
     
     @Scheduled(fixedRate = 60*1000)
     public void autosync() {
