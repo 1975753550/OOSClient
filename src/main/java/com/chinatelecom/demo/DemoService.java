@@ -72,7 +72,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
 
@@ -88,7 +90,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
 
@@ -104,7 +108,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
 
@@ -120,7 +126,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
 
@@ -136,7 +144,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
 
@@ -152,7 +162,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
     
@@ -189,7 +201,9 @@ public class DemoService {
             return error;
         }
         obj.put("data", result);
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
     
@@ -203,7 +217,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(code);
+        if(logger.isInfoEnabled()) {
+            logger.info(code);
+        }
         JSONObject obj = new JSONObject();
         if(code.equalsIgnoreCase("204")) {
             obj.put("data", "succeed");
@@ -219,7 +235,9 @@ public class DemoService {
         JSONObject obj = new JSONObject();
         try {
             result = bucket.getBucket(bucketName);
-            logger.info(result);
+            if(logger.isInfoEnabled()) {
+                logger.info(result);
+            }
             obj = xml2Json(result.trim());
         }catch(Exception e) {
             e.printStackTrace();
@@ -227,7 +245,9 @@ public class DemoService {
             error.put("errormessage", e.getMessage());
             return error;
         }
-        logger.info(obj.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(obj.toJSONString());
+        }
         return obj;
     }
 

@@ -41,10 +41,13 @@ public class Controller {
     public JSONObject createBucket(
             @ApiParam(required = true, name = "bucketName", value = "bucketName", example = "11.11.185.52") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug(
-                "request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.createBucket(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
 
@@ -55,9 +58,13 @@ public class Controller {
     public JSONObject deleteBucket(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.deleteBucket(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
 
@@ -66,9 +73,13 @@ public class Controller {
     public JSONObject getACL(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.getACL(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
 
@@ -79,20 +90,29 @@ public class Controller {
     public JSONObject getLifecycle(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.getLifecycle(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
 
     @ApiOperation(value = "get bucket logging", notes = "input example:   bucketName:bgm", response = JSONObject.class)
-	 @PostMapping(value = "/getLogging")
-	 public JSONObject getLogging(
-			 @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName) throws Exception {
-		 logger.debug("request params bucketName:"+bucketName);
-		 JSONObject response = demoService.getLogging(bucketName);
-         logger.info(response.toJSONString());
-         return response;
+    @PostMapping(value = "/getLogging")
+    public JSONObject getLogging(
+            @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
+            throws Exception {
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
+        JSONObject response = demoService.getLogging(bucketName);
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
+        return response;
     }
 
     @ApiOperation(value = "get bucket policy", notes = "input example:   bucketName:bgm", response = JSONObject.class)
@@ -100,9 +120,13 @@ public class Controller {
     public JSONObject getPolicy(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.getPolicy(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
 
@@ -111,9 +135,13 @@ public class Controller {
     public JSONObject getCors(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.getCors(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
 
     }
@@ -123,12 +151,16 @@ public class Controller {
     public JSONObject getWebsite(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.getWebsite(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
-    
+
     @ApiOperation(value = "upload object", notes = "input example:   bucketName:bgm, objName:ccccch, data:11111111", response = JSONObject.class)
     @PostMapping(value = "/uploadObject")
     public JSONObject uploadObject(
@@ -136,45 +168,62 @@ public class Controller {
             @ApiParam(required = true, name = "objName", value = "objName") @RequestParam(name = "objName") String objName,
             @ApiParam(required = true, name = "data", value = "data") @RequestParam(name = "data") String data)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName + "objName:"+objName);
-        JSONObject response = demoService.uploadObject(bucketName, objName, data);
-        logger.info(response.toJSONString());
-        
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName + "objName:"
+                    + objName);
+        }
+        JSONObject response = demoService.uploadObject(bucketName, objName,
+                data);
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
-    
+
     @ApiOperation(value = "download object", notes = "input example:   bucketName:bgm, objName:ccccch", response = JSONObject.class)
     @PostMapping(value = "/downloadObject")
     public JSONObject downloadObject(
-            @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName, 
+            @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName,
             @ApiParam(required = true, name = "objName", value = "objName") @RequestParam(name = "objName") String objName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.downloadObject(bucketName, objName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
-    
+
     @ApiOperation(value = "delete object", notes = "input example:   bucketName:bgm, objName:ccccch", response = JSONObject.class)
     @PostMapping(value = "/deleteObject")
     public JSONObject deleteObject(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName,
             @ApiParam(required = true, name = "objName", value = "objName") @RequestParam(name = "objName") String objName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.deleteObject(bucketName, objName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
-    
+
     @ApiOperation(value = "list object", notes = "input example:   bucketName:bgm", response = JSONObject.class)
     @PostMapping(value = "/listObject")
     public JSONObject listObject(
             @ApiParam(required = true, name = "bucketName", value = "bucketName") @RequestParam(name = "bucketName") String bucketName)
             throws Exception {
-        logger.debug("request params bucketName:" + bucketName);
+        if (logger.isDebugEnabled()) {
+            logger.debug("request params bucketName:" + bucketName);
+        }
         JSONObject response = demoService.listObject(bucketName);
-        logger.info(response.toJSONString());
+        if(logger.isInfoEnabled()) {
+            logger.info(response.toJSONString());
+        }
         return response;
     }
 

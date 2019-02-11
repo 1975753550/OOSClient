@@ -52,7 +52,7 @@ public class OOSClient {
         TimeZone gmt = TimeZone.getTimeZone("GMT");
         DATE_FMT.setTimeZone(gmt);
     }
-    private static final String host = "oos-js.ctyunapi.cn";
+    private static final String host = "oos-js-iam.ctyunapi.cn";
     private static final int port = 80;
     private static final String ak = "6fc56a43ed2b551b94c6";
     private static final String sk = "8d33af6fdd78361f9ef07d2f54522e6ea374cdc9";
@@ -126,7 +126,9 @@ public class OOSClient {
         String authorization = authorize(request.get().getRequestMethod(), date,
                 request.get().getBucketName(), request.get().getObjName(),
                 request.get().getUrl(), beCanonicalizedAMZHeaders(httpRequest));
-        logger.debug(authorization);
+        if(logger.isDebugEnabled()) {
+            logger.debug(authorization);
+        }
         httpRequest.setHeader("Authorization", authorization);
         httpRequest.setHeader("Date", date);
         if (!request.get().getRequestBody().isEmpty()) {
@@ -139,10 +141,13 @@ public class OOSClient {
                 ((HttpPost) httpRequest).setEntity(entity);
             }
         }
-        logger.debug(httpRequest.getURI().toString());
-        for (Header head : httpRequest.getAllHeaders()) {
-            logger.debug(head.getName() + ":" + head.getValue());
+        if(logger.isDebugEnabled()) {
+            logger.debug(httpRequest.getURI().toString());
+            for (Header head : httpRequest.getAllHeaders()) {
+                logger.debug(head.getName() + ":" + head.getValue());
+            }
         }
+        
         response.set(httpClient.execute(httpRequest, localContext));
         getResponse(response.get());
         return this;
@@ -154,7 +159,9 @@ public class OOSClient {
             if (key.startsWith("x-amz")) {
                 sb.append(key + ":" + request.get().headers.get(key) + "\n");
             }
-            logger.debug(key + ":" + request.get().headers.get(key) + "\n");
+            if(logger.isDebugEnabled()) {
+                logger.debug(key + ":" + request.get().headers.get(key) + "\n");
+            }
             httpRequest.setHeader(key, request.get().headers.get(key));
         }
 
@@ -190,7 +197,9 @@ public class OOSClient {
                     + CanonicalizedAMZHeaders + "/" + bucket + "/" + objectName
                     + requestUrl;
         }
-        logger.debug(stringToSign);
+        if(logger.isDebugEnabled()) {
+            logger.debug(stringToSign);
+        }
         Mac mac = Mac.getInstance("HmacSHA1");
         mac.init(new SecretKeySpec(sk.getBytes("UTF-8"), "HmacSHA1"));
         byte[] macResult = mac.doFinal(stringToSign.getBytes("UTF-8"));
@@ -207,13 +216,17 @@ public class OOSClient {
 
     private String getResponse(HttpResponse response) throws IOException {
         responseCode.set(response.getStatusLine().getStatusCode());
-        logger.debug(response.getStatusLine().toString());
+        if(logger.isDebugEnabled()) {
+            logger.debug(response.getStatusLine().toString());
+        }
         StringBuilder head = new StringBuilder();
         for (Header header : response.getAllHeaders()) {
             head.append(header.getName() + ":" + header.getValue() + "\n");
         }
         responseHeader.set(head.toString());
-        logger.debug(head.toString());
+        if(logger.isDebugEnabled()) {
+            logger.debug(head.toString());
+        }
         HttpEntity entity = response.getEntity();
         InputStream instream = null;
         StringBuilder sb = new StringBuilder();
@@ -232,7 +245,9 @@ public class OOSClient {
             }
         }
         responseBody.set(sb.toString());
-        logger.debug(responseBody.get());
+        if(logger.isDebugEnabled()) {
+            logger.debug(responseBody.get());
+        }
         return responseBody.get();
     }
 
@@ -256,7 +271,9 @@ public class OOSClient {
     @Scheduled(fixedRate = 60*1000)
     public void autosync() {
         if(poolingHttpClientConnectionManager != null) {
-            logger.info("开始清除无效链接....");
+            if(logger.isInfoEnabled()) {
+                logger.info("开始清除无效链接....");
+            }
             poolingHttpClientConnectionManager.closeExpiredConnections();
             poolingHttpClientConnectionManager.closeIdleConnections(30, TimeUnit.SECONDS);
    
