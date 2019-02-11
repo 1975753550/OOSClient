@@ -22,7 +22,11 @@ public abstract class Request {
      * @param url the url to set
      */
     protected Request setUrl(String requestUrl) {
-        this.requestUrl = requestUrl;
+        if(this.requestUrl!=null&&!this.requestUrl.isEmpty()) {
+            this.requestUrl += requestUrl;
+        }else {
+            this.requestUrl = requestUrl;
+        }
         return this;
     }
     /**

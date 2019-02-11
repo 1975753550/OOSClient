@@ -77,12 +77,11 @@ public class OOSClient {
         HttpRoute route = new HttpRoute(httpHost);
         poolingHttpClientConnectionManager.setMaxPerRoute(route, 100);
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectTimeout(CONN_TIMEOUT).setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)  
-                .setSocketTimeout(READ_TIMEOUT).build(); 
-        httpClient = HttpClientBuilder.create()
-                .setMaxConnTotal(200)
-                .setMaxConnPerRoute(100)
-                .setDefaultRequestConfig(requestConfig)
+                .setConnectTimeout(CONN_TIMEOUT)
+                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+                .setSocketTimeout(READ_TIMEOUT).build();
+        httpClient = HttpClientBuilder.create().setMaxConnTotal(200)
+                .setMaxConnPerRoute(100).setDefaultRequestConfig(requestConfig)
                 .setConnectionManager(poolingHttpClientConnectionManager)
                 .setKeepAliveStrategy(new MyConnectionKeepAliveStrategy())
                 .build();
@@ -126,7 +125,7 @@ public class OOSClient {
         String authorization = authorize(request.get().getRequestMethod(), date,
                 request.get().getBucketName(), request.get().getObjName(),
                 request.get().getUrl(), beCanonicalizedAMZHeaders(httpRequest));
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(authorization);
         }
         httpRequest.setHeader("Authorization", authorization);
@@ -141,13 +140,13 @@ public class OOSClient {
                 ((HttpPost) httpRequest).setEntity(entity);
             }
         }
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(httpRequest.getURI().toString());
             for (Header head : httpRequest.getAllHeaders()) {
                 logger.debug(head.getName() + ":" + head.getValue());
             }
         }
-        
+
         response.set(httpClient.execute(httpRequest, localContext));
         getResponse(response.get());
         return this;
@@ -155,14 +154,16 @@ public class OOSClient {
 
     private String beCanonicalizedAMZHeaders(HttpUriRequest httpRequest) {
         StringBuilder sb = new StringBuilder();
-        for (String key : request.get().headers.keySet()) {
+        for (String key : request.get().getHeaders().keySet()) {
             if (key.startsWith("x-amz")) {
-                sb.append(key + ":" + request.get().headers.get(key) + "\n");
+                sb.append(
+                        key + ":" + request.get().getHeaders().get(key) + "\n");
             }
-            if(logger.isDebugEnabled()) {
-                logger.debug(key + ":" + request.get().headers.get(key) + "\n");
+            if (logger.isDebugEnabled()) {
+                logger.debug(
+                        key + ":" + request.get().getHeaders().get(key) + "\n");
             }
-            httpRequest.setHeader(key, request.get().headers.get(key));
+            httpRequest.setHeader(key, request.get().getHeaders().get(key));
         }
 
         return sb.toString();
@@ -185,19 +186,23 @@ public class OOSClient {
             throws NoSuchAlgorithmException, IllegalStateException,
             UnsupportedEncodingException, InvalidKeyException {
         String stringToSign;
-        String ContentMD5 = "";
-        if (request.get().headers.containsKey("Content-MD5")) {
-            ContentMD5 = request.get().headers.get("Content-MD5");
+        String contentMD5 = "";
+        String contentType = "";
+        if (request.get().getHeaders().containsKey("Content-MD5")) {
+            contentMD5 = request.get().getHeaders().get("Content-MD5");
+        }
+        if (request.get().getHeaders().containsKey("Content-Type")) {
+            contentType = request.get().getHeaders().get("Content-Type");
         }
         if (objectName.equalsIgnoreCase("")) {
-            stringToSign = httpVerb + "\n" + ContentMD5 + "\n\n" + date + "\n"
-                    + CanonicalizedAMZHeaders + "/" + bucket + requestUrl;
+            stringToSign = httpVerb + "\n" + contentMD5 + "\n" + contentType
+                    + "\n" + date + "\n" + CanonicalizedAMZHeaders + "/";
         } else {
-            stringToSign = httpVerb + "\n" + ContentMD5 + "\n\n" + date + "\n"
-                    + CanonicalizedAMZHeaders + "/" + bucket + "/" + objectName
-                    + requestUrl;
+            stringToSign = httpVerb + "\n" + contentMD5 + "\n" + contentType
+                    + "\n" + date + "\n" + CanonicalizedAMZHeaders + "/"
+                    + bucket + "/" + objectName + requestUrl;
         }
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(stringToSign);
         }
         Mac mac = Mac.getInstance("HmacSHA1");
@@ -216,7 +221,7 @@ public class OOSClient {
 
     private String getResponse(HttpResponse response) throws IOException {
         responseCode.set(response.getStatusLine().getStatusCode());
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(response.getStatusLine().toString());
         }
         StringBuilder head = new StringBuilder();
@@ -224,7 +229,7 @@ public class OOSClient {
             head.append(header.getName() + ":" + header.getValue() + "\n");
         }
         responseHeader.set(head.toString());
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(head.toString());
         }
         HttpEntity entity = response.getEntity();
@@ -245,7 +250,7 @@ public class OOSClient {
             }
         }
         responseBody.set(sb.toString());
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(responseBody.get());
         }
         return responseBody.get();
@@ -266,19 +271,18 @@ public class OOSClient {
     public void setRequestUrl(String requestUrl) {
         request.get().setUrl(requestUrl);
     }
-    
-    
-    @Scheduled(fixedRate = 60*1000)
+
+    @Scheduled(fixedRate = 60 * 1000)
     public void autosync() {
-        if(poolingHttpClientConnectionManager != null) {
-            if(logger.isInfoEnabled()) {
+        if (poolingHttpClientConnectionManager != null) {
+            if (logger.isInfoEnabled()) {
                 logger.info("开始清除无效链接....");
             }
             poolingHttpClientConnectionManager.closeExpiredConnections();
-            poolingHttpClientConnectionManager.closeIdleConnections(30, TimeUnit.SECONDS);
-   
+            poolingHttpClientConnectionManager.closeIdleConnections(30,
+                    TimeUnit.SECONDS);
+
         }
     }
-    
 
 }
