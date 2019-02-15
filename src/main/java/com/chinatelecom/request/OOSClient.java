@@ -6,10 +6,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
@@ -27,8 +23,6 @@ import org.apache.http.conn.routing.HttpRoute;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.chinatelecom.request.Request;
 import com.chinatelecom.util.MyConnectionKeepAliveStrategy;
+import com.chinatelecom.request.OOSV4Sign;
 
 @Component
 public class OOSClient {
@@ -45,26 +40,22 @@ public class OOSClient {
     private static final int CONN_TIMEOUT = 10000;
     private static final int READ_TIMEOUT = 30000;
     private static final int CONNECTION_REQUEST_TIMEOUT = 30000;
-    private static final String DATE_STR = "EEE, d MMM yyyy HH:mm:ss 'GMT'";
-    private static final SimpleDateFormat DATE_FMT = new SimpleDateFormat(
-            DATE_STR, Locale.ENGLISH);
-    static {
-        TimeZone gmt = TimeZone.getTimeZone("GMT");
-        DATE_FMT.setTimeZone(gmt);
-    }
-    private static final String host = "oos-js-iam.ctyunapi.cn";
-    private static final int port = 80;
-    private static final String ak = "6fc56a43ed2b551b94c6";
-    private static final String sk = "8d33af6fdd78361f9ef07d2f54522e6ea374cdc9";
-
-    private ThreadLocal<URL> url = new ThreadLocal<URL>();
+    static String regionName = "hesjz";
+    static String serviceName = "s3";
+    private static String host = "oos-"+regionName+".ctyunapi.cn";
+    private static int port = 80;
+    static final String ak = "f4f0e26e5952be5b04b7";
+    static final String sk = "21896471c739eff494895f2ec583b2039883e741";
+    private static boolean isV4Signature = true;
+    
+    
     private ThreadLocal<Request> request = new ThreadLocal<Request>();
-
     private ThreadLocal<Integer> responseCode = new ThreadLocal<Integer>();
     private ThreadLocal<String> responseHeader = new ThreadLocal<String>();
     private ThreadLocal<String> responseBody = new ThreadLocal<String>();
     private ThreadLocal<HttpResponse> response = new ThreadLocal<HttpResponse>();
     private volatile static OOSClient client;
+    private volatile static OOSClient IAMclient;
     private final HttpClient httpClient;
     private final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
 
@@ -89,47 +80,49 @@ public class OOSClient {
 
     public OOSClient connect() throws IOException, InvalidKeyException,
             NoSuchAlgorithmException, IllegalStateException {
-        String date;
-        synchronized (OOSClient.class) {
-            date = DATE_FMT.format(new Date());
-        }
         if (request.get().getObjName() != null
                 && request.get().getObjName().equalsIgnoreCase("")) {
-            url.set(new URL("http", host, port, "/"
-                    + request.get().getBucketName() + request.get().getUrl()));
+            request.get().setUrl(new URL("http", host, port, "/"
+                    + request.get().getBucketName() + request.get().getRequestUrl()));
         } else {
-            url.set(new URL("http", host, port,
+            request.get().setUrl(new URL("http", host, port,
                     "/" + request.get().getBucketName() + "/"
                             + request.get().getObjName()
-                            + request.get().getUrl()));
+                            + request.get().getRequestUrl()));
         }
         HttpUriRequest httpRequest = null;
-        HttpContext localContext = new BasicHttpContext();
         switch (request.get().getRequestMethod()) {
         case "GET":
-            httpRequest = new HttpGet(url.get().toString());
+            httpRequest = new HttpGet(request.get().getUrl().toString());
             break;
         case "POST":
-            httpRequest = new HttpPost(url.get().toString());
+            httpRequest = new HttpPost(request.get().getUrl().toString());
             break;
         case "PUT":
-            httpRequest = new HttpPut(url.get().toString());
+            httpRequest = new HttpPut(request.get().getUrl().toString());
             break;
         case "DELETE":
-            httpRequest = new HttpDelete(url.get().toString());
+            httpRequest = new HttpDelete(request.get().getUrl().toString());
             break;
         case "HEAD":
-            httpRequest = new HttpHead(url.get().toString());
+            httpRequest = new HttpHead(request.get().getUrl().toString());
             break;
         }
-        String authorization = authorize(request.get().getRequestMethod(), date,
-                request.get().getBucketName(), request.get().getObjName(),
-                request.get().getUrl(), beCanonicalizedAMZHeaders(httpRequest));
+        String authorization;
+        if(isV4Signature) {
+            authorization = OOSV4Sign.authorize(request.get(), httpRequest);
+        }else {
+            authorization = authorize(request.get().getRequestMethod(), request.get().getDate(),
+                    request.get().getBucketName(), request.get().getObjName(),
+                    request.get().getRequestUrl(), beCanonicalizedAMZHeaders(httpRequest), 
+                    httpRequest);
+        }
         if (logger.isDebugEnabled()) {
             logger.debug(authorization);
         }
+        
+        beCanonicalizedAMZHeaders(httpRequest);
         httpRequest.setHeader("Authorization", authorization);
-        httpRequest.setHeader("Date", date);
         if (!request.get().getRequestBody().isEmpty()) {
             StringEntity entity = new StringEntity(
                     request.get().getRequestBody());
@@ -147,7 +140,7 @@ public class OOSClient {
             }
         }
 
-        response.set(httpClient.execute(httpRequest, localContext));
+        response.set(httpClient.execute(httpRequest));
         getResponse(response.get());
         return this;
     }
@@ -163,6 +156,8 @@ public class OOSClient {
                 logger.debug(
                         key + ":" + request.get().getHeaders().get(key) + "\n");
             }
+            if(key.equals("content-length"))
+                continue;
             httpRequest.setHeader(key, request.get().getHeaders().get(key));
         }
 
@@ -173,6 +168,7 @@ public class OOSClient {
         if (client == null) {
             synchronized (OOSClient.class) {
                 if (client == null) {
+                    setHost("oos-"+regionName+".ctyunapi.cn");
                     client = new OOSClient();
                 }
             }
@@ -180,14 +176,30 @@ public class OOSClient {
         return client;
     }
 
+    public static OOSClient getIAMClient() {
+        if (IAMclient == null) {
+            synchronized (OOSClient.class) {
+                if (IAMclient == null) {
+                    setHost("oos-"+regionName+"-iam.ctyunapi.cn");
+                    IAMclient = new OOSClient();
+                }
+            }
+        }
+        return IAMclient;
+    }
+
     private String authorize(String httpVerb, String date, String bucket,
             String objectName, String requestUrl,
-            String CanonicalizedAMZHeaders)
+            String CanonicalizedAMZHeaders,
+            HttpUriRequest httpRequest)
             throws NoSuchAlgorithmException, IllegalStateException,
             UnsupportedEncodingException, InvalidKeyException {
         String stringToSign;
         String contentMD5 = "";
         String contentType = "";
+        if(requestUrl.startsWith("?Action")) {
+            requestUrl = "";
+        }
         if (request.get().getHeaders().containsKey("Content-MD5")) {
             contentMD5 = request.get().getHeaders().get("Content-MD5");
         }
@@ -196,7 +208,8 @@ public class OOSClient {
         }
         if (objectName.equalsIgnoreCase("")) {
             stringToSign = httpVerb + "\n" + contentMD5 + "\n" + contentType
-                    + "\n" + date + "\n" + CanonicalizedAMZHeaders + "/";
+                    + "\n" + date + "\n" + CanonicalizedAMZHeaders + "/"
+                    + bucket + requestUrl;
         } else {
             stringToSign = httpVerb + "\n" + contentMD5 + "\n" + contentType
                     + "\n" + date + "\n" + CanonicalizedAMZHeaders + "/"
@@ -210,11 +223,19 @@ public class OOSClient {
         byte[] macResult = mac.doFinal(stringToSign.getBytes("UTF-8"));
         String signature = new String(Base64.encodeBase64(macResult), "UTF-8");
         String authorization = "AWS " + ak + ":" + signature;
+        httpRequest.setHeader("Date", date);
         return authorization;
     }
 
     public String sendRequest(Request request) throws Exception {
         this.request.set(request);
+        request.putHeader("host", host);
+        request.setRegionName(regionName);
+        request.setServiceName(serviceName);
+        request.putHeader("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+//        request.putHeader("Connection", "Keep-Alive");
+        request.putHeader("User-Agent", "Zw_Acoll");
+        request.putHeader("Accept-Encoding", "gzip,deflate");
         connect();
         return String.valueOf(response.get().getStatusLine().getStatusCode());
     }
@@ -269,7 +290,11 @@ public class OOSClient {
     }
 
     public void setRequestUrl(String requestUrl) {
-        request.get().setUrl(requestUrl);
+        request.get().setRequestUrl(requestUrl);
+    }
+
+    private static void setHost(String endPoint) {
+        host = endPoint;
     }
 
     @Scheduled(fixedRate = 60 * 1000)

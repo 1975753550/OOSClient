@@ -28,18 +28,26 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 public class SignatureV4Sample {
+    
+    private static final String DATE_STR = "EEE, d MMM yyyy HH:mm:ss 'GMT'";
+    private static final SimpleDateFormat DATE_FMT = new SimpleDateFormat(
+            DATE_STR, Locale.ENGLISH);
+    static {
+        TimeZone gmt = TimeZone.getTimeZone("GMT");
+        DATE_FMT.setTimeZone(gmt);
+    }
     /** Put your access key here **/
-    private static final String accessKey = "6fc56a43ed2b551b94c6";
+    private static final String accessKey = "f4f0e26e5952be5b04b7";
     /** Put your secret key here **/
-    private static final String secretKey = "8d33af6fdd78361f9ef07d2f54522e6ea374cdc9";
+    private static final String secretKey = "21896471c739eff494895f2ec583b2039883e741";
     /** Put your bucket name here **/
-    private static final String bucketName = "bgm";
+    private static final String bucketName = "bgmhhj";
     /** Put your object name here **/
-    private static final String objectName = "23432";
+    private static final String objectName = "bbbnj";
     /** Put your object content here **/
-    private static final String objectContent = "hello world!";
+    private static final String objectContent = "hello  world";
     /** The name of the region where the bucket is created. (e.g. cn-180622) **/
-    private static final String regionName = "js";
+    private static final String regionName = "hesjz";
     
     /** SHA256 hash of an empty request body **/
     public static final String EMPTY_BODY_SHA256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
@@ -62,10 +70,10 @@ public class SignatureV4Sample {
         // set payloadHashEnabled is true if you want to compute the entire payload checksum and include it in signature calculation
         boolean payloadHashEnabled = true;
         putObject(bucketName, objectName, regionName, accessKey, secretKey, payloadHashEnabled);
-        getObject(bucketName, objectName, regionName, accessKey, secretKey);
-        String presignedUrl = getPresignedUrlToObject(bucketName, objectName, regionName, accessKey, secretKey);
-        String response = invokeHttpRequest(new URL(presignedUrl), "GET", new HashMap<String, String>(), null);
-        System.out.println("Get object by presignedUrl response:" + response);
+//        getObject(bucketName, objectName, regionName, accessKey, secretKey);
+//        String presignedUrl = getPresignedUrlToObject(bucketName, objectName, regionName, accessKey, secretKey);
+//        String response = invokeHttpRequest(new URL(presignedUrl), "GET", new HashMap<String, String>(), null);
+//        System.out.println("Get object by presignedUrl response:" + response);
     }
     
     public static void putObject(String bucketName, String objectName, String regionName, String accessKey, String secretKey, boolean payloadHashEnabled) {
@@ -90,7 +98,7 @@ public class SignatureV4Sample {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("x-amz-content-sha256", contentHashString);
         headers.put("content-length", String.valueOf(objectContent.getBytes().length));
-        headers.put("x-amz-storage-class", "REDUCED_REDUNDANCY");
+//        headers.put("x-amz-storage-class", "REDUCED_REDUNDANCY");
         
         String authorization = computeSignature(headers, 
                                                        null, // no query parameters
@@ -375,10 +383,16 @@ public class SignatureV4Sample {
         // first get the date and time for the subsequent request, and convert
         // to ISO 8601 format for use in signature generation
         Date now = new Date();
-        String dateTimeStamp = timeFormatter.format(now);
+        String dateTimeStamp = timeFormatter.format(now);//"20190215T082522Z";//
+        
+//        String date = DATE_FMT.format(new Date());
 
         // update the headers with required 'x-amz-date' and 'host' values
         headers.put("x-amz-date", dateTimeStamp);
+        headers.put("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
+//        headers.put("Connection", "Keep-Alive");
+        headers.put("User-Agent", "Zw_Acoll");
+        headers.put("Accept-Encoding", "gzip,deflate");
         
         String hostHeader = endpointUrl.getHost();
         int port = endpointUrl.getPort();

@@ -1,31 +1,62 @@
 package com.chinatelecom.request;
 
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 public abstract class Request {
     
-    protected String requestUrl = "";
-    protected String requestMethod = "";
-    protected Map<String, String> headers = new HashMap<String, String>();
-    protected String bucketName = "";
-    protected String objName = "";
-    protected String requestBody = "";
+    private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+    private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
+    private static final String DATE_STR = "EEE, d MMM yyyy HH:mm:ss 'GMT'";
+    private static final SimpleDateFormat DATE_FMT = new SimpleDateFormat(
+            DATE_STR, Locale.ENGLISH);
+    static {
+        TimeZone gmt = TimeZone.getTimeZone("GMT");
+        DATE_FMT.setTimeZone(gmt);
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        timeFormatter.setTimeZone(utc);
+        dateFormatter.setTimeZone(utc);
+    }
+    
+    private String requestUrl = "";
+    private String requestMethod = "";
+    private Map<String, String> headers = new HashMap<String, String>();
+    private String bucketName = "";
+    private String objName = "";
+    private String requestBody = "";
+    private URL url;
+    private String serviceName = "s3";
+    private String regionName;
+    private String dateStamp;
+    private String dateTimeStamp;
+    private String date;
+    
+    protected Request() {
+        Date now = new Date();
+        setDateTimeStamp(timeFormatter.format(now));
+        dateStamp = dateFormatter.format(now);
+        date = DATE_FMT.format(now);
+    }
     
     /**
      * @return the url
      */
-    protected String getUrl() {
+    protected String getRequestUrl() {
         return requestUrl;
     }
     /**
      * @param url the url to set
      */
-    protected Request setUrl(String requestUrl) {
+    protected Request setRequestUrl(String requestUrl) {
         if(this.requestUrl!=null&&!this.requestUrl.isEmpty()) {
-            this.requestUrl += requestUrl;
+            this.requestUrl += ("&"+requestUrl);
         }else {
-            this.requestUrl = requestUrl;
+            this.requestUrl = "?"+requestUrl;
         }
         return this;
     }
@@ -99,10 +130,84 @@ public abstract class Request {
      */
     protected void setRequestBody(String requestBody) {
         if(this.requestBody!=null&&!this.requestBody.isEmpty()) {
-            this.requestBody += requestBody;
+            this.requestBody += ("&"+requestBody);
         }else {
             this.requestBody = requestBody;
         }
+    }
+    /**
+     * @return the url
+     */
+    protected URL getUrl() {
+        return url;
+    }
+    /**
+     * @param url the url to set
+     */
+    protected void setUrl(URL url) {
+        this.url = url;
+    }
+    /**
+     * @return the serviceName
+     */
+    protected String getServiceName() {
+        return serviceName;
+    }
+    /**
+     * @param serviceName the serviceName to set
+     */
+    protected void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+    /**
+     * @return the regionName
+     */
+    protected String getRegionName() {
+        return regionName;
+    }
+    /**
+     * @param regionName the regionName to set
+     */
+    protected void setRegionName(String regionName) {
+        this.regionName = regionName;
+    }
+    /**
+     * @return the dateStamp
+     */
+    protected String getDateStamp() {
+        return dateStamp;
+    }
+    /**
+     * @param dateStamp the dateStamp to set
+     */
+    protected void setDateStamp(String dateStamp) {
+        this.dateStamp = dateStamp;
+    }
+    /**
+     * @return the date
+     */
+    protected String getDate() {
+        return date;
+    }
+    /**
+     * @param date the date to set
+     */
+    protected void setDate(String date) {
+        this.date = date;
+    }
+
+    /**
+     * @return the dateTimeStamp
+     */
+    protected String getDateTimeStamp() {
+        return dateTimeStamp;
+    }
+
+    /**
+     * @param dateTimeStamp the dateTimeStamp to set
+     */
+    protected void setDateTimeStamp(String dateTimeStamp) {
+        this.dateTimeStamp = dateTimeStamp;
     }
     
 

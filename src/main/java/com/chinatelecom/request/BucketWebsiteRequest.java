@@ -7,7 +7,7 @@ public class BucketWebsiteRequest extends Request {
     public BucketWebsiteRequest(String bucketName, Action action) {
         setBucketName(bucketName);
         setRequestMethod(action.name());
-        setUrl("?website");
+        setRequestUrl("website");
     }
     
     public BucketWebsiteRequest setConfigXML(String configXML) {

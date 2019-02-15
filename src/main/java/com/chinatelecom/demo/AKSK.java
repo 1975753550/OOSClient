@@ -9,7 +9,7 @@ import com.chinatelecom.util.Primary;
 public class AKSK {
     
     public String createAKSK() throws Exception {
-        OOSClient client = OOSClient.getClient();
+        OOSClient client = OOSClient.getIAMClient();
         AKSKAction action = AKSKAction.create;
         AKSKRequest request = new AKSKRequest(action);
         client.sendRequest(request);
@@ -17,7 +17,7 @@ public class AKSK {
     }
     
     public String listAKSK() throws Exception {
-        OOSClient client = OOSClient.getClient();
+        OOSClient client = OOSClient.getIAMClient();
         AKSKAction action = AKSKAction.list;
         AKSKRequest request = new AKSKRequest(action);
         client.sendRequest(request);
@@ -25,7 +25,7 @@ public class AKSK {
     }
     
     public String deleteAKSK(String ak) throws Exception {
-        OOSClient client = OOSClient.getClient();
+        OOSClient client = OOSClient.getIAMClient();
         AKSKAction action = AKSKAction.delete;
         AKSKRequest request = new AKSKRequest(action);
         request.setAK(ak);
@@ -34,7 +34,7 @@ public class AKSK {
     }
     
     public String updateAKSK(String ak, KeyStatus status, Primary primary) throws Exception {
-        OOSClient client = OOSClient.getClient();
+        OOSClient client = OOSClient.getIAMClient();
         AKSKAction action = AKSKAction.update;
         AKSKRequest request = new AKSKRequest(action);
         request.setAK(ak);
@@ -43,5 +43,10 @@ public class AKSK {
         client.sendRequest(request);
         return String.valueOf(client.getResponseCode());
     }
+    
+    public static void main(String[] args) throws Exception {
+        new AKSK().createAKSK();
+    }
+    
 
 }

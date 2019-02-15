@@ -7,7 +7,7 @@ public class BucketACLRequest extends Request {
     public BucketACLRequest(String bucketName, Action action) {
         setBucketName(bucketName);
         setRequestMethod(action.name());
-        setUrl("?acl");
+        setRequestUrl("acl");
     }
 
 }
