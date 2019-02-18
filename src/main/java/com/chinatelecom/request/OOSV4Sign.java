@@ -16,7 +16,8 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import java.util.TreeMap;
-import com.chinatelecom.demo.Object;
+
+import com.chinatelecom.demo.Bucket;
 import com.chinatelecom.util.OOSClientConfig;
 import static com.chinatelecom.util.OOSClientConfig.*;
 
@@ -35,10 +36,10 @@ public class OOSV4Sign {
         dateFormatter.setTimeZone(utc);
     }
     
-    
     public static void main(String[] args) throws Exception {
-        new Object().getObject("bgmhhj", "GGGHJjk");
+        new Bucket().deleteBucket("ccbvave11");
     }
+    
     
     static String authorize(Request request, HttpUriRequest httpRequest, OOSClientConfig config) {
         request.putHeader("x-amz-date", request.getDateTimeStamp().toUpperCase());

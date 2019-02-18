@@ -56,4 +56,18 @@ public class OOSV2Sign {
         httpRequest.setHeader("Date", request.getDate());
         return authorization;
     }
+    
+    public static void main(String[] args) throws Exception {
+        String stringToSign = "GET\n" + 
+                "\n" + 
+                "\n" + 
+                "Mon, 18 Feb 2019 07:40:09 GMT\n" + 
+                "/bgm";
+        Mac mac = Mac.getInstance("HmacSHA1");
+        mac.init(new SecretKeySpec(sk.getBytes("UTF-8"), "HmacSHA1"));
+        byte[] macResult = mac.doFinal(stringToSign.getBytes("UTF-8"));
+        String signature = new String(Base64.encodeBase64(macResult), "UTF-8");
+        String authorization = "AWS " + ak + ":" + signature;
+        System.out.println(authorization);
+    }
 }

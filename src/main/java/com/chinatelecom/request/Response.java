@@ -17,7 +17,11 @@ public class Response {
     private String responseHeader = "";
     private String responseBody = "";
     
-    String getResponse(HttpResponse response) throws IOException {
+    Response(HttpResponse response) throws IOException{
+        getResponse(response);
+    }
+    
+    private Response getResponse(HttpResponse response) throws IOException {
         responseCode = response.getStatusLine().getStatusCode();
         if (logger.isDebugEnabled()) {
             logger.debug(response.getStatusLine().toString());
@@ -51,7 +55,7 @@ public class Response {
         if (logger.isDebugEnabled()) {
             logger.debug(responseBody);
         }
-        return responseBody;
+        return this;
     }
 
     int getResponseCode() {

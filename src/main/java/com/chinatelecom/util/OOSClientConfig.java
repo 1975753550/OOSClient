@@ -62,6 +62,12 @@ public class OOSClientConfig {
     
     public void setIAMHost() {
         isIAM = true;
+        serviceName = "sts";
+    }
+    
+    public void setCommonHost() {
+        isIAM = false;
+        serviceName = "s3";
     }
     
 

@@ -18,7 +18,6 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import com.chinatelecom.request.Request;
 import com.chinatelecom.util.MyConnectionKeepAliveStrategy;
@@ -26,7 +25,6 @@ import com.chinatelecom.util.OOSClientConfig;
 import com.chinatelecom.request.OOSV4Sign;
 import static com.chinatelecom.util.OOSClientConfig.*;
 
-@Component
 public class OOSClient {
 
     private static Logger logger = LoggerFactory.getLogger(OOSClient.class);
@@ -59,12 +57,13 @@ public class OOSClient {
                 .setKeepAliveStrategy(new MyConnectionKeepAliveStrategy())
                 .build();
     }
-    
+
     public static OOSClient getClient() {
         if (client == null) {
             synchronized (OOSClient.class) {
                 if (client == null) {
                     OOSClientConfig config = new OOSClientConfig();
+                    config.setCommonHost();
                     client = new OOSClient(config);
                 }
             }
@@ -85,18 +84,50 @@ public class OOSClient {
         return IAMclient;
     }
 
+    public String sendRequest(Request request) throws Exception {
+        this.request.set(request);
+        if (isV4Signature) {
+            request.putHeader("host",
+                    request.getBucketName() + "." + config.getHost());
+        }
+        request.setRegionName(config.getRegionName());
+        request.setServiceName(config.getServiceName());
+        request.putHeader("Content-Type",
+                "application/x-www-form-urlencoded; charset=utf-8");
+        // request.putHeader("Connection", "Keep-Alive");
+        request.putHeader("User-Agent", "Zw_Acoll");
+        request.putHeader("Accept-Encoding", "gzip,deflate");
+        connect();
+        return String
+                .valueOf(httpResponse.get().getStatusLine().getStatusCode());
+    }
+
+    private String getUrl() {
+        if (isV4Signature) {
+            if (request.get().getObjName() != null
+                    && request.get().getObjName().equalsIgnoreCase("")) {
+                return "/" + request.get().getRequestUrl();
+            } else {
+                return "/" + request.get().getObjName()
+                        + request.get().getRequestUrl();
+            }
+        } else {
+            if (request.get().getObjName() != null
+                    && request.get().getObjName().equalsIgnoreCase("")) {
+                return "/" + request.get().getBucketName()
+                        + request.get().getRequestUrl();
+            } else {
+                return "/" + request.get().getBucketName() + "/"
+                        + request.get().getObjName()
+                        + request.get().getRequestUrl();
+            }
+        }
+    }
+
     public OOSClient connect() throws IOException, InvalidKeyException,
             NoSuchAlgorithmException, IllegalStateException {
-        if (request.get().getObjName() != null
-                && request.get().getObjName().equalsIgnoreCase("")) {
-            request.get().setUrl(new URL("http", config.getHost(),
-                    config.getPort(), "/" + request.get().getRequestUrl()));
-        } else {
-            request.get()
-                    .setUrl(new URL("http", config.getHost(), config.getPort(),
-                            "/" + request.get().getObjName()
-                                    + request.get().getRequestUrl()));
-        }
+        request.get().setUrl(
+                new URL("http", config.getHost(), config.getPort(), getUrl()));
         HttpUriRequest httpRequest = null;
         switch (request.get().getRequestMethod()) {
         case "GET":
@@ -120,7 +151,7 @@ public class OOSClient {
             authorization = OOSV4Sign.authorize(request.get(), httpRequest,
                     config);
         } else {
-            authorization = OOSV2Sign.authorize(request.get(), 
+            authorization = OOSV2Sign.authorize(request.get(),
                     beCanonicalizedAMZHeaders(httpRequest), httpRequest);
         }
         if (logger.isDebugEnabled()) {
@@ -147,7 +178,7 @@ public class OOSClient {
         }
 
         httpResponse.set(httpClient.execute(httpRequest));
-        response.get().getResponse(httpResponse.get());
+        response.set(new Response(httpResponse.get()));
         return this;
     }
 
@@ -168,22 +199,6 @@ public class OOSClient {
         }
 
         return sb.toString();
-    }
-
-    public String sendRequest(Request request) throws Exception {
-        this.request.set(request);
-        request.putHeader("host",
-                request.getBucketName() + "." + config.getHost());
-        request.setRegionName(config.getRegionName());
-        request.setServiceName(config.getServiceName());
-        request.putHeader("Content-Type",
-                "application/x-www-form-urlencoded; charset=utf-8");
-        // request.putHeader("Connection", "Keep-Alive");
-        request.putHeader("User-Agent", "Zw_Acoll");
-        request.putHeader("Accept-Encoding", "gzip,deflate");
-        connect();
-        return String
-                .valueOf(httpResponse.get().getStatusLine().getStatusCode());
     }
 
     public int getResponseCode() {
