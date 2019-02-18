@@ -16,9 +16,9 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.http.client.methods.HttpUriRequest;
 
 import java.util.TreeMap;
-
 import com.chinatelecom.demo.Object;
-import static com.chinatelecom.request.OOSClient.*;
+import com.chinatelecom.util.OOSClientConfig;
+import static com.chinatelecom.util.OOSClientConfig.*;
 
 public class OOSV4Sign {
     
@@ -37,23 +37,23 @@ public class OOSV4Sign {
     
     
     public static void main(String[] args) throws Exception {
-        new Object().putObject("bgmhhj", "bbbnj", "hello  world");
+        new Object().getObject("bgmhhj", "GGGHJjk");
     }
     
-    static String authorize(Request request, HttpUriRequest httpRequest) {
+    static String authorize(Request request, HttpUriRequest httpRequest, OOSClientConfig config) {
         request.putHeader("x-amz-date", request.getDateTimeStamp().toUpperCase());
         request.putHeader("x-amz-content-sha256", getHashedPayload(request));
-        request.putHeader("content-length", String.valueOf(request.getRequestBody().getBytes().length));
-        return getSignature(request);
+//        request.putHeader("content-length", String.valueOf(request.getRequestBody().getBytes().length));
+        return getSignature(request, config);
     }
     
-    private static String getSignature(Request request) {
+    private static String getSignature(Request request, OOSClientConfig config) {
         String stringToSign = getStringToSign(request);
 
         byte[] kSecret = (SCHEME + sk).getBytes();
         byte[] kDate = sign(request.getDateStamp(), kSecret, "HmacSHA256");
-        byte[] kRegion = sign(regionName, kDate, "HmacSHA256");
-        byte[] kService = sign(serviceName, kRegion, "HmacSHA256");
+        byte[] kRegion = sign(config.getRegionName(), kDate, "HmacSHA256");
+        byte[] kService = sign(config.getServiceName(), kRegion, "HmacSHA256");
         byte[] kSigning = sign(TERMINATOR, kService, "HmacSHA256");
         byte[] signature = sign(stringToSign, kSigning, "HmacSHA256");
         
@@ -104,13 +104,11 @@ public class OOSV4Sign {
     
     private static String getCanonicalURI(Request request) {
         StringBuilder sb = new StringBuilder();
-        if(!request.getBucketName().isEmpty()) {
-            sb.append("/");
-            sb.append(request.getBucketName());
-        }
         if(!request.getObjName().isEmpty()) {
             sb.append("/");
             sb.append(request.getObjName());
+        }else {
+            sb.append("/");
         }
         return sb.toString();
     }
