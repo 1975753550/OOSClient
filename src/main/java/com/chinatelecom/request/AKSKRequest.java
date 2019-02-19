@@ -9,7 +9,7 @@ public class AKSKRequest extends Request {
     
     public AKSKRequest(AKSKAction action) {
         setRequestMethod(Action.POST.name());
-        setRequestUrl("Action", action.getName());
+//        setRequestUrl("Action", action.getName());
         setRequestBody("Action="+action.getName());
     }
     

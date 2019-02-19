@@ -48,7 +48,7 @@ public class OOSV4Sign {
     static String authorize(Request request, HttpUriRequest httpRequest, OOSClientConfig config) {
         request.putHeader("x-amz-date", request.getDateTimeStamp().toUpperCase());
         request.putHeader("x-amz-content-sha256", getHashedPayload(request));
-//        request.putHeader("content-length", String.valueOf(request.getRequestBody().getBytes().length));
+        request.putHeader("content-length", String.valueOf(request.getRequestBody().getBytes().length));
         return getSignature(request, config);
     }
     
