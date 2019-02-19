@@ -14,6 +14,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.client.methods.HttpUriRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.TreeMap;
 
@@ -22,6 +24,8 @@ import com.chinatelecom.util.OOSClientConfig;
 import static com.chinatelecom.util.OOSClientConfig.*;
 
 public class OOSV4Sign {
+	
+	private static Logger logger = LoggerFactory.getLogger(OOSV4Sign.class);
     
     private static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
     private static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
@@ -37,7 +41,7 @@ public class OOSV4Sign {
     }
     
     public static void main(String[] args) throws Exception {
-        new Bucket().deleteBucket("ccbvave11");
+        new Bucket().getBucketACL("bgmhhj");
     }
     
     
@@ -78,9 +82,11 @@ public class OOSV4Sign {
                 request.getDateTimeStamp() + "\n" +
                 scope + "\n" +
                 toHex(hash(canonicalRequest));
-        System.out.println("--------- String to sign -----------");
-        System.out.println(stringToSign);
-        System.out.println("------------------------------------");
+        if(logger.isDebugEnabled()) {
+        	logger.debug("--------- String to sign -----------");
+        	logger.debug(stringToSign);
+        	logger.debug("------------------------------------");
+        }
         return stringToSign;
     }
     
@@ -96,10 +102,11 @@ public class OOSV4Sign {
         sb.append("\n");
         sb.append(getSignedHeaders(request));
         sb.append("\n");
-        sb.append(getHashedPayload(request));
-        System.out.println("--------- Canonical request --------");
-        System.out.println(sb.toString());
-        System.out.println("------------------------------------");
+        sb.append(getHashedPayload(request));if(logger.isDebugEnabled()) {
+        	logger.debug("--------- Canonical request --------");
+        	logger.debug(sb.toString());
+        	logger.debug("------------------------------------");
+        }
         return sb.toString();
     }
     

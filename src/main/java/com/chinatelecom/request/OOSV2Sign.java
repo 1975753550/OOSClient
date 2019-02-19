@@ -27,8 +27,8 @@ public class OOSV2Sign {
         String stringToSign;
         String contentMD5 = "";
         String contentType = "";
-        if (request.getRequestUrl().startsWith("?Action")) {
-            request.setRequestUrl("");
+        if (request.getRequestUrl().contains("Action")) {
+            request.removeRequestUrl("Action");
         }
         if (request.getHeaders().containsKey("Content-MD5")) {
             contentMD5 = request.getHeaders().get("Content-MD5");

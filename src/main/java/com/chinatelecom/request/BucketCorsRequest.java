@@ -8,7 +8,7 @@ public class BucketCorsRequest extends Request {
     public BucketCorsRequest(String bucketName, Action action) {
         setBucketName(bucketName);
         setRequestMethod(action.name());
-        setRequestUrl("cors");
+        setRequestUrl("cors", "");
     }
     
     public BucketCorsRequest setConfigXML(String configXML) {

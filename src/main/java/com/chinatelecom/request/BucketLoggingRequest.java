@@ -7,7 +7,7 @@ public class BucketLoggingRequest extends Request {
     public BucketLoggingRequest(String bucketName, Action action) {
         setBucketName(bucketName);
         setRequestMethod(action.name());
-        setRequestUrl("logging");
+        setRequestUrl("logging", "");
     }
     
     public BucketLoggingRequest setConfigXML(String configXML) {

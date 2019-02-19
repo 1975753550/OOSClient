@@ -7,7 +7,7 @@ public class BucketPolicyRequest extends Request{
     public BucketPolicyRequest(String bucketName, Action action) {
         setBucketName(bucketName);
         setRequestMethod(action.name());
-        setRequestUrl("policy");
+        setRequestUrl("policy", "");
     }
     
     public BucketPolicyRequest setConfigXML(String configXML) {

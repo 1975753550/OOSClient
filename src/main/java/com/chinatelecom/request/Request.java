@@ -4,8 +4,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TimeZone;
 
 public abstract class Request {
@@ -23,7 +25,7 @@ public abstract class Request {
         dateFormatter.setTimeZone(utc);
     }
     
-    private String requestUrl = "";
+    private Map<String, String> requestUrl = new HashMap<String, String>();
     private String requestMethod = "";
     private Map<String, String> headers = new HashMap<String, String>();
     private String bucketName = "";
@@ -47,18 +49,36 @@ public abstract class Request {
      * @return the url
      */
     protected String getRequestUrl() {
-        return requestUrl;
+        StringBuilder sb = new StringBuilder();
+        Iterator<Entry<String, String>> it = requestUrl.entrySet().iterator();
+        if(it.hasNext()) {
+        	sb.append("?");
+        }
+    	while(it.hasNext()) {
+    		Entry<String, String> e = it.next();
+    		sb.append(e.getKey());
+    		if(!e.getValue().isEmpty()) {
+        		sb.append("=");
+        		sb.append(e.getValue());
+    		}
+    		if(it.hasNext()) {
+    			sb.append("&");
+    		}
+    	}
+    	return sb.toString();
     }
     /**
      * @param url the url to set
      */
-    protected Request setRequestUrl(String requestUrl) {
-        if(this.requestUrl!=null&&!this.requestUrl.isEmpty()) {
-            this.requestUrl += ("&"+requestUrl);
-        }else {
-            this.requestUrl = "?"+requestUrl;
-        }
+    protected Request setRequestUrl(String key, String value) {
+        requestUrl.put(key, value);
         return this;
+    }
+    protected Request removeRequestUrl(String requestUrl) {
+    	if(this.requestUrl.containsKey(requestUrl)) {
+    		this.requestUrl.remove(requestUrl);
+    	}
+    	return this;
     }
     /**
      * @return the requestMethod

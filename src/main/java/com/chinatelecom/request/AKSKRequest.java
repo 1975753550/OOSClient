@@ -9,25 +9,25 @@ public class AKSKRequest extends Request {
     
     public AKSKRequest(AKSKAction action) {
         setRequestMethod(Action.POST.name());
-        setRequestUrl("Action="+action.getName());
+        setRequestUrl("Action", action.getName());
         setRequestBody("Action="+action.getName());
     }
     
     public AKSKRequest setAK(String ak) {
         
-        setRequestUrl("AccessKeyId="+ak);
+        setRequestUrl("AccessKeyId", ak);
         setRequestBody("AccessKeyId="+ak);
         return this;
     }
     
     public AKSKRequest setPrimary(Primary primary) {
-        setRequestUrl("IsPrimary="+primary.getPrimary());
+        setRequestUrl("IsPrimary", String.valueOf(primary.getPrimary()));
         setRequestBody("IsPrimary="+primary.getPrimary());
         return this;
     }
     
     public AKSKRequest setStatus(KeyStatus status) {
-        setRequestUrl("Status="+status.name());
+        setRequestUrl("Status", status.name());
         setRequestBody("Status="+status.name());
         return this;
     }

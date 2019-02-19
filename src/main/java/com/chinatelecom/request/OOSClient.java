@@ -92,11 +92,11 @@ public class OOSClient {
         }
         request.setRegionName(config.getRegionName());
         request.setServiceName(config.getServiceName());
-        request.putHeader("Content-Type",
-                "application/x-www-form-urlencoded; charset=utf-8");
-        // request.putHeader("Connection", "Keep-Alive");
-        request.putHeader("User-Agent", "Zw_Acoll");
-        request.putHeader("Accept-Encoding", "gzip,deflate");
+//        request.putHeader("Content-Type",
+//                "application/x-www-form-urlencoded; charset=utf-8");
+////        request.putHeader("Connection", "Keep-Alive");
+//        request.putHeader("User-Agent", "Zw_Acoll");
+//        request.putHeader("Accept-Encoding", "gzip,deflate");
         connect();
         return String
                 .valueOf(httpResponse.get().getStatusLine().getStatusCode());

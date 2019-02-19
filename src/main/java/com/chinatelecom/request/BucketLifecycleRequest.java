@@ -7,7 +7,7 @@ public class BucketLifecycleRequest extends Request {
     public BucketLifecycleRequest(String bucketName, Action action) {
         setBucketName(bucketName);
         setRequestMethod(action.name());
-        setRequestUrl("lifecycle");
+        setRequestUrl("lifecycle", "");
     }
     
     public BucketLifecycleRequest setConfigXML(String configXML) {

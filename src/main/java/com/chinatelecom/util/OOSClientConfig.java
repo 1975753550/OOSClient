@@ -11,9 +11,10 @@ public class OOSClientConfig {
     private String regionName = "hesjz";
     private String serviceName = "s3";
     private String host = "oos-"+regionName+".ctyunapi.cn";
-    private String IamHost = "oos-"+regionName+"-iam.ctyunapi.cn";
+    private String IamHost = "oos-cn-iam.ctyunapi.cn";
     private int port = 80;
     private boolean isIAM = false;
+    private boolean isVersionV6 = true;
     /**
      * @return the port
      */
@@ -40,15 +41,18 @@ public class OOSClientConfig {
     }
     
     public String getRegionName() {
+    	if(isIAM) {
+    		if(isVersionV6) {
+    			return "cn";
+    		}
+    	}
         return regionName;
     }
     
     public void setRegionName(String regionName) {
         this.regionName = regionName;
-        if(isIAM) {
-            IamHost = "oos-"+regionName+"-iam.ctyunapi.cn";
-        }else {
-            host = "oos-"+regionName+".ctyunapi.cn";
+        if(!isIAM) {
+        	host = "oos-"+regionName+".ctyunapi.cn";
         }
     }
     
