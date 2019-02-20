@@ -32,7 +32,13 @@ public class OOSClient {
     private ThreadLocal<Request> request = new ThreadLocal<Request>();
     private ThreadLocal<Response> response = new ThreadLocal<Response>();
     private ThreadLocal<HttpResponse> httpResponse = new ThreadLocal<HttpResponse>();
+    /*
+     *
+     */
     private volatile static OOSClient client;
+    /*
+     * 
+     */
     private volatile static OOSClient IAMclient;
     private final HttpClient httpClient;
     private final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
@@ -98,7 +104,6 @@ public class OOSClient {
         request.setServiceName(config.getServiceName());
         request.putHeader("Content-Type",
                 "application/x-www-form-urlencoded; charset=utf-8");
-//         request.putHeader("Connection", "Keep-Alive");
         request.putHeader("User-Agent", "Zw_Acoll");
         request.putHeader("Accept-Encoding", "gzip,deflate");
         connect();

@@ -23,6 +23,7 @@ public class Bucket {
         return String.valueOf(client.getResponseCode());
     }
     
+    
     public String deleteBucketCors(String bucketName) throws Exception {
         OOSClient client = OOSClient.getClient();
         Action action = Action.DELETE;

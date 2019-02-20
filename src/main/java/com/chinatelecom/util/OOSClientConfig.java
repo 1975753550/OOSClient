@@ -74,5 +74,9 @@ public class OOSClientConfig {
         serviceName = "s3";
     }
     
+    public boolean isIAM() {
+        return isIAM;
+    }
+    
 
 }

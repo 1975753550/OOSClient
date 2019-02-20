@@ -44,9 +44,4 @@ public class AKSK {
         return String.valueOf(client.getResponseCode());
     }
     
-    public static void main(String[] args) throws Exception {
-        new AKSK().createAKSK();
-    }
-    
-
 }

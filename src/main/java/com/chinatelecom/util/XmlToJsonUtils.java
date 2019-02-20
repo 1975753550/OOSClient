@@ -1,33 +1,20 @@
 package com.chinatelecom.util;
- 
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
- 
+
 import org.apache.log4j.Logger;
 import org.dom4j.*;
- 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.List;
- 
+
 public class XmlToJsonUtils {
     private static Logger logger = Logger.getLogger(XmlToJsonUtils.class);
- 
-    public static void main(String[] args) throws Exception {
-        // String xmlStr= readFile("D:/ADA/et/Issue_20130506_back.xml");
- 
-        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><WebsiteConfiguration xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><IndexDocument><Suffix>index.html</Suffix></IndexDocument><ErrorDocument><Key>error.html</Key></ErrorDocument></WebsiteConfiguration>";
- 
-        Document doc = DocumentHelper.parseText(xml);
-        JSONObject json = new JSONObject();
-        dom4j2Json(doc.getRootElement(), json);
-        System.out.println(xmlToJson(xml));
-//        System.out.println("xml2Json:" + json.toJSONString());
- 
-    }
- 
+
     public static String xmlToJson(String xml) {
         Document doc;
         try {
@@ -35,15 +22,20 @@ public class XmlToJsonUtils {
             JSONObject json = new JSONObject();
             dom4j2Json(doc.getRootElement(), json);
             System.out.println("xml2Json:" + json.toJSONString());
-            logger.warn("xml2Json:" + json.toJSONString());
+            if (logger.isWarnEnabled()) {
+                logger.warn("xml2Json:" + json.toJSONString());
+            }
             return json.toJSONString();
         } catch (DocumentException e) {
-            logger.warn("数据解析失败");
+            if (logger.isWarnEnabled()) {
+                logger.warn("数据解析失败");
+            }
+
         }
         return null;
- 
+
     }
- 
+
     public static String readFile(String path) throws Exception {
         File file = new File(path);
         FileInputStream fis = new FileInputStream(file);
@@ -56,9 +48,9 @@ public class XmlToJsonUtils {
         fc.close();
         fis.close();
         return str;
- 
+
     }
- 
+
     /**
      * xml转json
      *
@@ -72,7 +64,7 @@ public class XmlToJsonUtils {
         dom4j2Json(doc.getRootElement(), json);
         return json;
     }
- 
+
     /**
      * xml转json
      *
@@ -91,7 +83,7 @@ public class XmlToJsonUtils {
         if (chdEl.isEmpty() && !isEmpty(element.getText())) {// 如果没有子元素,只有一个值
             json.put(element.getName(), element.getText());
         }
- 
+
         for (Element e : chdEl) {// 有子元素
             if (!e.elements().isEmpty()) {// 子元素也有子元素
                 JSONObject chdjson = new JSONObject();
@@ -116,7 +108,7 @@ public class XmlToJsonUtils {
                         json.put(e.getName(), chdjson);
                     }
                 }
- 
+
             } else {// 子元素没有子元素
                 for (Object o : element.attributes()) {
                     Attribute attr = (Attribute) o;
@@ -130,9 +122,9 @@ public class XmlToJsonUtils {
             }
         }
     }
- 
+
     public static boolean isEmpty(String str) {
- 
+
         if (str == null || str.trim().isEmpty() || "null".equals(str)) {
             return true;
         }

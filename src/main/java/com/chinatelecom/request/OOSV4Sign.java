@@ -18,8 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.TreeMap;
-
-import com.chinatelecom.demo.Bucket;
 import com.chinatelecom.util.OOSClientConfig;
 import static com.chinatelecom.util.OOSClientConfig.*;
 
@@ -40,20 +38,14 @@ public class OOSV4Sign {
         dateFormatter.setTimeZone(utc);
     }
     
-    public static void main(String[] args) throws Exception {
-        new Bucket().getBucketACL("bgmhhj");
-    }
-    
-    
     static String authorize(Request request, HttpUriRequest httpRequest, OOSClientConfig config) {
         request.putHeader("x-amz-date", request.getDateTimeStamp().toUpperCase());
-        request.putHeader("x-amz-content-sha256", getHashedPayload(request));
-        request.putHeader("content-length", String.valueOf(request.getRequestBody().getBytes().length));
+        request.putHeader("x-amz-content-sha256", getHashedPayload(request, config));
         return getSignature(request, config);
     }
     
     private static String getSignature(Request request, OOSClientConfig config) {
-        String stringToSign = getStringToSign(request);
+        String stringToSign = getStringToSign(request, config);
 
         byte[] kSecret = (SCHEME + sk).getBytes();
         byte[] kDate = sign(request.getDateStamp(), kSecret, "HmacSHA256");
@@ -75,9 +67,9 @@ public class OOSV4Sign {
         return authorizationHeader;
     }
     
-    private static String getStringToSign(Request request) {
+    private static String getStringToSign(Request request, OOSClientConfig config) {
         String scope =  request.getDateStamp() + "/" + request.getRegionName() + "/" + request.getServiceName() + "/" + TERMINATOR;
-        String canonicalRequest = getCanonicalRequest(request);
+        String canonicalRequest = getCanonicalRequest(request, config);
         String stringToSign = SCHEME+"-"+ALGORITHM+"\n"+
                 request.getDateTimeStamp() + "\n" +
                 scope + "\n" +
@@ -90,7 +82,7 @@ public class OOSV4Sign {
         return stringToSign;
     }
     
-    private static String getCanonicalRequest(Request request) {
+    private static String getCanonicalRequest(Request request, OOSClientConfig config) {
         StringBuilder sb = new StringBuilder();
         sb.append(request.getRequestMethod());
         sb.append("\n");
@@ -102,7 +94,7 @@ public class OOSV4Sign {
         sb.append("\n");
         sb.append(getSignedHeaders(request));
         sb.append("\n");
-        sb.append(getHashedPayload(request));if(logger.isDebugEnabled()) {
+        sb.append(getHashedPayload(request, config));if(logger.isDebugEnabled()) {
         	logger.debug("--------- Canonical request --------");
         	logger.debug(sb.toString());
         	logger.debug("------------------------------------");
@@ -184,9 +176,13 @@ public class OOSV4Sign {
         return sb.toString();
     }
     
-    private static String getHashedPayload(Request request) {
+    private static String getHashedPayload(Request request, OOSClientConfig config) {
         String payLoad = request.getRequestBody();
-        return toHex(hash(payLoad));
+        if(config.isIAM()) {
+            return "UNSIGNED-PAYLOAD";
+        }else {
+            return toHex(hash(payLoad));
+        }
     }
     
     
